@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"localhost/srm/command"
 	"os"
+	"waldirborbajr/srm/command"
 )
 
 var usage = `Usage: srm command [options]
