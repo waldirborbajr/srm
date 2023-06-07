@@ -34,6 +34,8 @@ func main() {
 	switch os.Args[1] {
 	case "srm":
 		cmd = command.SafeRemoveCommand()
+	case "rst":
+		cmd = command.RestoreCommand()
 	// case "frm":
 	// 	cmd = command.ForceRemoveCommand()
 	case "ver":
