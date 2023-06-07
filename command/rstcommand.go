@@ -9,9 +9,9 @@ import (
 	"strings"
 )
 
-var rstUsage = `Removes a specific file/directory.
+var rstUsage = `Restone a specific file/directory.
 
-Usage: srm srm file.bak
+Usage: srm rst file.bak
 
 Options:
 `
