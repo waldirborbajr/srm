@@ -2,7 +2,7 @@
 ## srm
 
 <p>
-  <img src="./assets/logo.png" width="120", height="120"/>
+  <img src="./assets/logo.png" width="128"/>
   <br>
 </p>
 
@@ -38,6 +38,6 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Technology
 
-<img src="assets/gopher.png" alt="srm" width="64" /> 
+<img src="assets/gopher.png" alt="srm" width="32" /> 
 
 [GO](https://go.dev/)
