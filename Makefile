@@ -7,7 +7,7 @@ ldflags  = -ldflags "-X 'github.com/waldirborbajr/srm/command.version=$(version)
 ldflags += -X 'github.com/waldirborbajr/srm/command.build=$(build)'"
 
 all:
-	go build -o $(binary) $(ldflags)
+	go build -o $(binary) $(ldflags) ./cmd/main.go
 	mv $(binary) $(GOPATH)/bin
 test:
 	go test ./... -cover -coverprofile c.out
