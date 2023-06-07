@@ -1,5 +1,10 @@
 
-# srm
+## srm
+
+<p>
+  <img src="./assets/logo.png" width="120", height="120"/>
+  <br>
+</p>
 
 `tl;dr:` srm it is a CLI (Command Line Interface), thats aims to be a Safe ReNove files, that allows recover it if necessarily.
 
@@ -22,7 +27,7 @@ $ srm ver
 
 ## License
 
-[MIT](https://github.com/WaldirBorbaJR/srm/-/blob/main/MIT)
+[MIT](https://github.com/waldirborbajr/srm/blob/main/LICENSE)
 
 ## Legal
 
@@ -33,6 +38,6 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Technology
 
-<img src="assets/srm-logo.png" alt="srm" width="45" height="45"/> 
+<img src="assets/gopher.png" alt="srm" width="64" /> 
 
 [GO](https://go.dev/)
