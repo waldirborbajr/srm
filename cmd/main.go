@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"waldirborbajr/srm/command"
 )
 
@@ -19,6 +20,10 @@ Commands:
 	ver Prints version info to console
 `
 
+func init() {
+	srmFolderExists()
+}
+
 func main() {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprint(usage))
@@ -27,8 +32,8 @@ func main() {
 	var cmd *command.Command
 
 	switch os.Args[1] {
-	// case "srm":
-	// 	cmd = command.SafeRemoveCommand()
+	case "srm":
+		cmd = command.SafeRemoveCommand()
 	// case "frm":
 	// 	cmd = command.ForceRemoveCommand()
 	case "ver":
@@ -48,4 +53,18 @@ func usageAndExit(msg string) {
 	}
 	flag.Usage()
 	os.Exit(0)
+}
+
+func srmFolderExists() {
+	homeDir, _ := os.UserHomeDir()
+
+	_, err := os.Stat(filepath.Join(homeDir, ".srm"))
+	if err != nil {
+		if os.IsNotExist(err) {
+			if err := os.Mkdir(filepath.Join(homeDir, ".srm"), 0600); err != nil {
+				fmt.Fprint(os.Stderr, "Error creating srm restore point folder.")
+				os.Exit(-1)
+			}
+		}
+	}
 }
