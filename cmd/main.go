@@ -63,7 +63,7 @@ func srmFolderExists() {
 	_, err := os.Stat(filepath.Join(homeDir, ".srm"))
 	if err != nil {
 		if os.IsNotExist(err) {
-			if err := os.Mkdir(filepath.Join(homeDir, ".srm"), 0600); err != nil {
+			if err := os.Mkdir(filepath.Join(homeDir, ".srm"), 0700); err != nil {
 				fmt.Fprint(os.Stderr, "Error creating srm restore point folder.")
 				os.Exit(-1)
 			}
