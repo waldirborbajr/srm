@@ -35,10 +35,10 @@ SPDX-License-Identifier: Apache-2.0
 
 ## TODO
 - [ ] Safe Remove directory with content and subdirectories
-[ ] Restore directory with files and subdirectories
-[ ] Add short command option
-[ ] Implement tests
-[ ] ??? to be continued
+- [ ] Restore directory with files and subdirectories
+- [ ] Add short command option
+- [ ] Implement tests
+- [ ] ??? to be continued
 
 ## Technology
 
