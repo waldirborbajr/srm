@@ -3,6 +3,7 @@ package command
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -30,12 +31,12 @@ func RestoreCommand() *Command {
 				errAndExit("Failed to read home directory")
 			}
 
-			srmPath := filepath.Join(homeDir, ".srm")
+			srmPathHome := filepath.Join(homeDir, ".srm")
 
 			// List files from srm restore point
-			fileToRestore, err := os.ReadDir(srmPath)
+			fileToRestore, err := os.ReadDir(srmPathHome)
 			if err != nil {
-				errAndExit("Failed to read restore poit directory > " + err.Error())
+				errAndExit("Failed to read restore point directory > " + err.Error())
 			}
 
 			for _, content := range fileToRestore {
@@ -44,41 +45,15 @@ func RestoreCommand() *Command {
 				srmPath := splitPath(rawContent)
 				if srmFileName != "" && srmPath != "" {
 					if file_name == srmFileName {
-						fmt.Println(" restoring > " + srmFileName + " to > " + srmPath)
+						fmt.Println(" target > " + srmFileName + " to > " + srmPath)
+						fmt.Println(" source > " + rawContent)
+
+						if isExistsPath(srmPath) {
+							srmRestore(filepath.Join(srmPathHome, rawContent), filepath.Join(srmPath, srmFileName))
+						}
 					}
 				}
 			}
-
-			// restorePath := filepath.Join(homeDir, ".srm", source) + file_name
-			// fmt.Println(restorePath)
-
-			// 1st Copy file to safety folder
-			// src, err := os.Open(file_name)
-			// if err != nil {
-			// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [src]")
-			// 	os.Exit(-1)
-			// }
-			// dst, err := os.Create(filePath)
-			// if err != nil {
-			// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [dst]")
-			// 	os.Exit(-1)
-			// }
-
-			// defer dst.Close()
-			// _, err = io.Copy(dst, src)
-			// src.Close()
-			// if err != nil {
-			// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [cpy]")
-			// 	os.Exit(-1)
-			// }
-
-			// 2nd Remove file
-			// if err := os.Remove(file_name); err != nil {
-			// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-			// 	fmt.Println(err.Error())
-			// 	os.Exit(-1)
-			// }
-			// fmt.Printf("srm: '%s' was safety deleted\n", file_name)
 		},
 	}
 
@@ -108,4 +83,45 @@ func splitPath(rawPath string) string {
 		return content
 	}
 	return ""
+}
+
+func isExistsPath(targetPath string) bool {
+	if _, err := os.Stat(targetPath); err == nil {
+		return true
+	} else if os.IsNotExist(err) {
+		return false
+	}
+	return false
+}
+
+func srmRestore(srmSrc string, srmTgt string) {
+	// 1rawContentst Copy file to safety folder
+	fmt.Println("step one: " + srmSrc)
+	src, err := os.Open(srmSrc)
+	if err != nil {
+		fmt.Fprint(os.Stderr, "srm: unable to save file. [src]")
+		os.Exit(-1)
+	}
+	dst, err := os.Create(srmTgt)
+	if err != nil {
+		fmt.Fprint(os.Stderr, "srm: unable to save file. [dst]")
+		os.Exit(-1)
+	}
+
+	defer dst.Close()
+
+	_, err = io.Copy(dst, src)
+	src.Close()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "srm: unable to save file. [cpy]")
+		os.Exit(-1)
+	}
+
+	// 2nd Remove file
+	// if err := os.Remove(file_name); err != nil {
+	// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+	// 	fmt.Println(err.Error())
+	// 	os.Exit(-1)
+	// }
+	// fmt.Printf("srm: '%s' was safety deleted\n", file_name)
 }
