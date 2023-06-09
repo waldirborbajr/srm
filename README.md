@@ -6,12 +6,11 @@
   <br>
 </p>
 
-`tl;dr:` srm it is a CLI (Command Line Interface), thats aims to be a Safe ReNove files, that allows recover it if necessarily.
+rtl;dr:` srm it is a CLI (Command Line Interface), thats aims to be a Safe ReMove files, that allows recover it if necessarily.
 
 ### How to use
 
 ```sh
-
 # Safe removing a file
 $ srm srm file.txt
 
@@ -35,6 +34,11 @@ Copyright 2023 Waldir Borba Junior (<mailto:wborbajr@gmail.com>)
 SPDX-License-Identifier: Apache-2.0
 
 ## TODO
+[ ] Safe Remove directory with content and subdirectories
+[ ] Restore directory with files and subdirectories
+[ ] Add short command option
+[ ] Implement tests
+[ ] ??? to be continued
 
 ## Technology
 
