@@ -34,7 +34,7 @@ Copyright 2023 Waldir Borba Junior (<mailto:wborbajr@gmail.com>)
 SPDX-License-Identifier: Apache-2.0
 
 ## TODO
-[ ] Safe Remove directory with content and subdirectories
+- [ ] Safe Remove directory with content and subdirectories
 [ ] Restore directory with files and subdirectories
 [ ] Add short command option
 [ ] Implement tests
