@@ -20,7 +20,7 @@ $ srm frm file.txt
 # Restoring a file removed with safe option
 $ srm rst file.txt
 
-# Printing version of srm
+# Print version of srm
 $ srm ver 
 ```
 
@@ -34,6 +34,7 @@ Copyright 2023 Waldir Borba Junior (<mailto:wborbajr@gmail.com>)
 SPDX-License-Identifier: Apache-2.0
 
 ## TODO
+- [ ] On Safe Remove must compress "deleted" content to optimize storaged space
 - [ ] Safe Remove directory with content and subdirectories
 - [ ] Restore directory with files and subdirectories
 - [ ] Add short command option
