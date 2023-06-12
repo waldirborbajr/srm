@@ -1,6 +1,7 @@
 package command
 
 import (
+	"compress/zlib"
 	"flag"
 	"fmt"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"waldirborbajr/srm/internal/srmfile"
 )
 
 var rstUsage = `Restore a specific file/directory.
@@ -19,7 +21,7 @@ Options:
 
 func RestoreCommand() *Command {
 	cmd := &Command{
-		flags: flag.NewFlagSet("restore", flag.ExitOnError),
+		flags: flag.NewFlagSet("rst", flag.ExitOnError),
 		Execute: func(cmd *Command, args []string) {
 			if len(args) == 0 {
 				errAndExit("file name or directory is required")
@@ -43,13 +45,13 @@ func RestoreCommand() *Command {
 				rawContent := content.Name()
 				srmFileName := splitFileName(rawContent)
 				srmPath := splitPath(rawContent)
+
 				if srmFileName != "" && srmPath != "" {
 					if file_name == srmFileName {
-						fmt.Println(" target > " + srmFileName + " to > " + srmPath)
-						fmt.Println(" source > " + rawContent)
-
 						if isExistsPath(srmPath) {
+							srmUncompress(filepath.Join(srmPathHome, rawContent))
 							srmRestore(filepath.Join(srmPathHome, rawContent), filepath.Join(srmPath, srmFileName))
+							srmfile.SrmCleanup(filepath.Join(srmPathHome, rawContent))
 						}
 					}
 				}
@@ -66,9 +68,11 @@ func RestoreCommand() *Command {
 
 func splitFileName(rawPath string) string {
 	srmFile := rawPath
-	pos := strings.Index(srmFile, "}")
-	if pos != -1 && pos < len(srmFile)-1 {
-		srmFileName := srmFile[pos+1:]
+	posStart := strings.Index(srmFile, "}")
+	posEnd := strings.Index(srmFile, ".zlib")
+
+	if posStart != -1 && posEnd != -1 {
+		srmFileName := srmFile[posStart+1 : posEnd]
 		return srmFileName
 	}
 	return ""
@@ -95,8 +99,9 @@ func isExistsPath(targetPath string) bool {
 }
 
 func srmRestore(srmSrc string, srmTgt string) {
+	// 1st uncompress file to retore
+
 	// 1rawContentst Copy file to safety folder
-	fmt.Println("step one: " + srmSrc)
 	src, err := os.Open(srmSrc)
 	if err != nil {
 		fmt.Fprint(os.Stderr, "srm: unable to save file. [src]")
@@ -124,4 +129,35 @@ func srmRestore(srmSrc string, srmTgt string) {
 	// 	os.Exit(-1)
 	// }
 	// fmt.Printf("srm: '%s' was safety deleted\n", file_name)
+}
+
+func srmUncompress(srmCompressedFile string) {
+	filename := srmCompressedFile
+
+	zlibfile, err := os.Open(filename)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer zlibfile.Close()
+
+	newfilename := strings.TrimSuffix(filename, ".zlib")
+	decompressedFile, err := os.Create(newfilename)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer decompressedFile.Close()
+
+	reader, err := zlib.NewReader(zlibfile)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer reader.Close()
+
+	if _, err := io.Copy(decompressedFile, reader); err != nil {
+		fmt.Println(err)
+		return
+	}
 }

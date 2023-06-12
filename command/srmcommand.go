@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"waldirborbajr/srm/internal/srmfile"
 )
 
 var srmUsage = `Removes a specific file/directory.
@@ -49,12 +50,21 @@ func SafeRemoveCommand() *Command {
 			srmCompress(filePath)
 
 			// 3rd Remove source file
-			srmRemove(file_name)
+			if err := srmfile.SrmRemove(file_name); err != nil {
+				fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
 
 			// 4th Remove target uncompressed file
-			srmRemove(filePath)
+			if err := srmfile.SrmRemove(filePath); err != nil {
+				fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+				fmt.Println(err.Error())
+				os.Exit(-1)
+			}
 
-			fmt.Printf("srm: '%s' was safety deleted\n", file_name)
+			fmt.Fprint(os.Stdout, "srm: ", file_name, " was safety deleted.")
+			os.Exit(0)
 		},
 	}
 
@@ -112,12 +122,4 @@ func srmCompress(srmFileToCompress string) {
 
 	// Copy the contents of the input file to the writer
 	io.Copy(writer, inputFile)
-}
-
-func srmRemove(srmRmFileName string) {
-	if err := os.Remove(srmRmFileName); err != nil {
-		fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-		fmt.Println(err.Error())
-		os.Exit(-1)
-	}
 }
