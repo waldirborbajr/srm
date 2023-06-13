@@ -39,6 +39,7 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] Restore directory with files and subdirectories
 - [ ] Add short command option
 - [ ] Implement tests
+- [ ] TTL to purge files removed with safe option.
 - [ ] ??? to be continued
 
 ## Technology

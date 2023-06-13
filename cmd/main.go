@@ -17,6 +17,7 @@ Option:
 Commands:
 	srm Remove a file/diretory using safe mode thats preserve file that is possible to restore
 	frm Remove a file/diretory using without preserve file, this options it is unable to restore 
+	cln TODO: cleanup removed files after TTL to be defined
 	ver Prints version info to console
 `
 
@@ -50,8 +51,11 @@ func main() {
 
 func usageAndExit(msg string) {
 	if msg != "" {
-		fmt.Fprint(os.Stderr, msg)
-		fmt.Fprintf(os.Stderr, "\n")
+		if err := fmt.Errorf("%s", msg); err != nil {
+			os.Exit(-1)
+		}
+		// fmt.Fprint(os.Stderr, msg)
+		// fmt.Fprintf(os.Stderr, "\n")
 	}
 	flag.Usage()
 	os.Exit(0)
