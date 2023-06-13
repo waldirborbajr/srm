@@ -34,11 +34,12 @@ Copyright 2023 Waldir Borba Junior (<mailto:wborbajr@gmail.com>)
 SPDX-License-Identifier: Apache-2.0
 
 ## TODO
-- [ ] On Safe Remove must compress "deleted" content to optimize storaged space
+- [x] On Safe Remove must compress "deleted" content to optimize storaged space
 - [ ] Safe Remove directory with content and subdirectories
 - [ ] Restore directory with files and subdirectories
 - [ ] Add short command option
 - [ ] Implement tests
+- [ ] TTL to purge files removed with safe option.
 - [ ] ??? to be continued
 
 ## Technology
