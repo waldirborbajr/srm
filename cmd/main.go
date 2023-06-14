@@ -4,9 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"waldirborbajr/srm/command"
+	"waldirborbajr/srm/internal/srmfile"
 )
+
+var srmHomeDir string
 
 var usage = `Usage: srm command [options]
 
@@ -15,17 +17,26 @@ srm - Safe Remove it is a simple tool to remove file/directory safety.
 Option:
 
 Commands:
-	srm Remove a file/diretory using safe mode thats preserve file that is possible to restore
-	frm Remove a file/diretory using without preserve file, this options it is unable to restore 
-	cln TODO: cleanup removed files after TTL to be defined
-	ver Prints version info to console
+	srm - Remove a file/diretory using safe mode thats preserve file that is possible to restore
+	rst - Restore a file/diretory that was deleted with safe option
+	cls - Cleanup removed files after 18 days if not informed another day as parameter
+	ver - Prints version info to console
 `
 
 func init() {
-	srmFolderExists()
+	var err error
+
+	srmHomeDir, err = srmfile.SrmHome()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: unable to get home directory: ")
+		os.Exit(-1)
+	}
 }
 
 func main() {
+	// Verify if .srm exists
+	srmFolderExists()
+
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprint(usage))
 	}
@@ -34,11 +45,11 @@ func main() {
 
 	switch os.Args[1] {
 	case "srm":
-		cmd = command.SafeRemoveCommand()
+		cmd = command.SafeRemoveCommand(srmHomeDir)
 	case "rst":
 		cmd = command.RestoreCommand()
-	// case "frm":
-	// 	cmd = command.ForceRemoveCommand()
+	case "cls":
+		cmd = command.CleanupCommand(srmHomeDir)
 	case "ver":
 		cmd = command.VersionCommand()
 	default:
@@ -62,12 +73,10 @@ func usageAndExit(msg string) {
 }
 
 func srmFolderExists() {
-	homeDir, _ := os.UserHomeDir()
-
-	_, err := os.Stat(filepath.Join(homeDir, ".srm"))
+	_, err := os.Stat(srmHomeDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			if err := os.Mkdir(filepath.Join(homeDir, ".srm"), 0700); err != nil {
+			if err := os.Mkdir(srmHomeDir, 0700); err != nil {
 				fmt.Fprint(os.Stderr, "Error creating srm restore point folder.")
 				os.Exit(-1)
 			}
