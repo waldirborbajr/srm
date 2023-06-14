@@ -31,14 +31,19 @@ func init() {
 		fmt.Fprintf(os.Stderr, "Error: unable to get home directory: ")
 		os.Exit(-1)
 	}
+
+	// Verify if .srm safety store folder exists
+	srmFolderExists()
 }
 
 func main() {
-	// Verify if .srm exists
-	srmFolderExists()
-
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprint(usage))
+	}
+
+	flag.Parse()
+	if flag.NArg() < 1 {
+		usageAndExit("")
 	}
 
 	var cmd *command.Command
