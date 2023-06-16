@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 	"waldirborbajr/srm/internal/app"
+	"waldirborbajr/srm/internal/srmfile"
 )
 
 var days string
@@ -22,8 +24,6 @@ Options:
 
 func clsFunc(cmd *Command, args []string, app app.Srm) {
 	if len(days) == 0 {
-		fmt.Println("Default value.")
-		fmt.Println(" >> ", app.SrmHomeDir)
 		days = "18"
 	} else {
 		if _, err := strconv.ParseInt(days, 10, 64); err != nil {
@@ -66,8 +66,10 @@ func srmCleanup(app app.Srm, day int) error {
 	for _, file := range tmpfiles {
 		if file.Mode().IsRegular() {
 			if isOlderThan(file.ModTime(), day) {
-				// srmfile.SrmRemove(file.Name())
-				fmt.Println("Purging... > ", file.Name())
+				fmt.Println("Removing : ", filepath.Join(app.SrmHomeDir, file.Name()))
+				if err := srmfile.SrmRemove(filepath.Join(app.SrmHomeDir, file.Name())); err != nil {
+					fmt.Fprintf(os.Stderr, "ERROR: removing %s", filepath.Join(app.SrmHomeDir, file.Name()))
+				}
 			}
 		}
 	}
