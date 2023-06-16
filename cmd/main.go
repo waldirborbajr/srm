@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os"
 	"waldirborbajr/srm/command"
+	"waldirborbajr/srm/internal/app"
 	"waldirborbajr/srm/internal/srmfile"
 )
 
-var srmHomeDir string
-
 var usage = `Usage: srm command [options]
 
-srm - Safe Remove it is a simple tool to remove file/directory safety.
+srm - Safe ReMove it is a simple tool to remove file/directory safety.
 
 Option:
 
@@ -20,28 +19,30 @@ Commands:
 	srm - Remove a file/diretory using safe mode thats preserve file that is possible to restore
 	rst - Restore a file/diretory that was deleted with safe option
 	cls - Cleanup removed files after 18 days if not informed another day as parameter
+	hlp - Display this help information
 	ver - Prints version info to console
 `
 
 func init() {
-	var err error
+}
 
-	srmHomeDir, err = srmfile.SrmHome()
+func main() {
+	srmHomeDir, err := srmfile.SrmHome()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: unable to get home directory: ")
 		os.Exit(-1)
 	}
+	app := &app.Srm{SrmHomeDir: srmHomeDir}
 
 	// Verify if .srm safety store folder exists
-	srmFolderExists()
-}
+	srmFolderExists(*app)
 
-func main() {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprint(usage))
 	}
 
 	flag.Parse()
+
 	if flag.NArg() < 1 {
 		usageAndExit("")
 	}
@@ -50,15 +51,19 @@ func main() {
 
 	switch os.Args[1] {
 	case "srm":
-		cmd = command.SafeRemoveCommand(srmHomeDir)
+		cmd = command.NewSafeRemoveCommand(*app)
 	case "rst":
-		cmd = command.RestoreCommand()
+		cmd = command.NewRestoreCommand(*app)
 	case "cls":
-		cmd = command.CleanupCommand(srmHomeDir)
+		cmd = command.NewCleanupCommand(*app)
+	case "hlp":
+		flag.Usage()
+		os.Exit(0)
 	case "ver":
 		cmd = command.VersionCommand()
 	default:
-		usageAndExit(fmt.Sprintf("srm: '%s' is not a srm valid command.\n", os.Args[1]))
+		fmt.Fprintf(os.Stderr, "srm: '%s' is not a srm valid command.\n execute srm hlp for help\n", os.Args[1])
+		os.Exit(-1)
 	}
 
 	cmd.Init(os.Args[2:])
@@ -77,11 +82,11 @@ func usageAndExit(msg string) {
 	os.Exit(0)
 }
 
-func srmFolderExists() {
-	_, err := os.Stat(srmHomeDir)
+func srmFolderExists(app app.Srm) {
+	_, err := os.Stat(app.SrmHomeDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			if err := os.Mkdir(srmHomeDir, 0700); err != nil {
+			if err := os.Mkdir(app.SrmHomeDir, 0700); err != nil {
 				fmt.Fprint(os.Stderr, "Error creating srm restore point folder.")
 				os.Exit(-1)
 			}
