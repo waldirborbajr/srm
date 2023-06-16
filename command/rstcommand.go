@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"waldirborbajr/srm/internal/app"
 	"waldirborbajr/srm/internal/srmfile"
 )
 
@@ -19,7 +20,7 @@ Usage: srm rst [file_name]
 Options:
 `
 
-func RestoreCommand() *Command {
+func NewRestoreCommand(app app.Srm) *Command {
 	cmd := &Command{
 		flags: flag.NewFlagSet("rst", flag.ExitOnError),
 		Execute: func(cmd *Command, args []string) {
@@ -28,12 +29,7 @@ func RestoreCommand() *Command {
 			}
 			file_name := args[0]
 
-			homeDir, err := os.UserHomeDir()
-			if err != nil {
-				errAndExit("Failed to read home directory")
-			}
-
-			srmPathHome := filepath.Join(homeDir, ".srm")
+			srmPathHome := app.SrmHomeDir
 
 			// List files from srm restore point
 			fileToRestore, err := os.ReadDir(srmPathHome)
@@ -48,6 +44,9 @@ func RestoreCommand() *Command {
 
 				if srmFileName != "" && srmPath != "" {
 					if file_name == srmFileName {
+						fmt.Println(rawContent)
+						fmt.Println(srmFileName)
+						fmt.Println(srmPath)
 						if isExistsPath(srmPath) {
 							srmUncompress(filepath.Join(srmPathHome, rawContent))
 							srmRestore(filepath.Join(srmPathHome, rawContent), filepath.Join(srmPath, srmFileName))

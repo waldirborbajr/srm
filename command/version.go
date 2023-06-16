@@ -31,7 +31,7 @@ var versionFunc = func(cmd *Command, args []string) {
 
 func VersionCommand() *Command {
 	cmd := &Command{
-		flags:   flag.NewFlagSet("version", flag.ExitOnError),
+		flags:   flag.NewFlagSet("ver", flag.ExitOnError),
 		Execute: versionFunc,
 	}
 

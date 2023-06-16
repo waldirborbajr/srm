@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
+	"waldirborbajr/srm/internal/app"
 	"waldirborbajr/srm/internal/srmfile"
 )
 
@@ -17,26 +19,23 @@ Usage: srm srm file.bak
 Options:
 `
 
-func SafeRemoveCommand(srmHomeDir string) *Command {
+func NewSafeRemoveCommand(app app.Srm) *Command {
 	cmd := &Command{
 		flags: flag.NewFlagSet("srm", flag.ExitOnError),
 		Execute: func(cmd *Command, args []string) {
 			if len(args) == 0 {
 				errAndExit("file name or directory is required")
 			}
+
 			file_name := args[0]
 
-			// extract only home dir
-			delimiter := ".srm"
-			index := strings.Index(srmHomeDir, delimiter)
-			var srmHome string
-			if index != -1 {
-				srmHome = srmHomeDir[:index]
-			}
+			srmPathAbs, _ := filepath.Abs(file_name)
+			idx := strings.Index(srmPathAbs, file_name)
+			srmSourcePath := srmPathAbs[:idx]
 
-			source := "{" + strings.Replace(srmHome, "/", "-", -1) + "}"
+			source := "{" + strings.Replace(srmSourcePath, "/", "-", -1) + "}"
 
-			filePath := srmHomeDir + "/" + source + file_name
+			filePath := app.SrmHomeDir + "/" + source + file_name
 
 			// 1st Copy file to safety folder
 			srmDoCopy(file_name, filePath)
