@@ -6,9 +6,21 @@
   <br>
 </p>
 
-rtl;dr:` srm it is a CLI (Command Line Interface), thats aims to be a Safe ReMove files, that allows recover it if necessarily.
+`tl;dr:` ```srm``` is a command-line Safe ReMove files, that allows recover it if necessarily.
 
-### How to use
+Deleted files are sent to (```~/.srm/```) giving you a chance to recover it. 
+
+### Installation
+   
+Or get a binary [https://github.com/waldirborbajr/srm/releases][release] (Linux x86_64, ARMv7 and macOS), untar it, and move it somewhere on your $PATH:
+```sh
+#+BEGIN_EXAMPLE
+$ tar xvzf srm-*.tar.gz
+$ mv srm /usr/local/bin
+#+END_EXAMPLE
+```
+
+### Usage
 
 ```sh
 # Safe removing a file
