@@ -1,5 +1,5 @@
 
-## srm
+## srm (Safe ReMove)
 
 <p>
   <img src="./assets/logo.png" width="128"/>
