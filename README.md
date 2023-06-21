@@ -14,17 +14,18 @@ Deleted files are sent to (```~/.srm/```) giving you a chance to recover it.
    
 Or get a binary [https://github.com/waldirborbajr/srm/releases][release] (Linux x86_64, ARMv7 and macOS), untar it, and move it somewhere on your $PATH:
 ```sh
-#+BEGIN_EXAMPLE
 $ tar xvzf srm-*.tar.gz
 $ mv srm /usr/local/bin
-#+END_EXAMPLE
 ```
 
 ### Usage
 
 ```sh
-# Safe removing a file
+# Safe removing a single file
 $ srm srm file.txt
+
+# Safe removing with wildcard pattern
+$ srm srm file*
 
 # Removing a file without safe restore enable
 $ srm frm file.txt
@@ -51,8 +52,9 @@ SPDX-License-Identifier: Apache-2.0
 - [ ] Restore directory with files and subdirectories
 - [ ] Add short command option
 - [ ] Implement tests
-- [ ] TTL to purge files removed with safe option.
-- [ ] ??? to be continued
+- [x] TTL to purge files removed with safe option.
+- [x] Delete passing with wildcard pattern
+- [ ] Open to PR and **new** features
 
 ## Technology
 
