@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,103 +13,157 @@ import (
 	"waldirborbajr/srm/internal/srmfile"
 )
 
-var srmUsage = `Removes a specific file/directory.
+var (
+	isSafe   bool
+	isForce  bool
+	srmUsage = `Usage: srm srm [options....]
 
-Usage: srm srm file.bak
+Usage: 
+	srm srm --save file.bak
+	srm srm --force file.bak
+	srm srm --save file*
 
 Options:
+	-s, --safe Save removed file/directory for restore
+	-f, --force Remove file/directory without restore option
 `
+)
 
 func NewSafeRemoveCommand(app app.Srm) *Command {
 	cmd := &Command{
 		flags: flag.NewFlagSet("srm", flag.ExitOnError),
 		Execute: func(cmd *Command, args []string) {
-			if len(args) == 0 {
-				errAndExit("file name or directory is required")
-			}
-
-			file_name := flag.Args()
-			// file_name := args[0]
-
-			for _, file := range file_name {
-				srmMatches, err := filepath.Glob(file)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-				}
-
-				for _, match := range srmMatches {
-					srmPathAbs, _ := filepath.Abs(match)
-					idx := strings.Index(srmPathAbs, match)
-					srmSourcePath := srmPathAbs[:idx]
-					source := "{" + strings.Replace(srmSourcePath, "/", "-", -1) + "}"
-					filePath := app.SrmHomeDir + "/" + source + match
-
-					// 1st Copy file to safety folder
-					srmDoCopy(match, filePath)
-
-					// 2nd Compress file on target
-					srmCompress(filePath)
-
-					// 3rd Remove source file
-					if err := srmfile.SrmRemove(match); err != nil {
-						fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-						fmt.Println(err.Error())
-						os.Exit(-1)
-					}
-
-					// 4th Remove target uncompressed file
-					if err := srmfile.SrmRemove(filePath); err != nil {
-						fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-						fmt.Println(err.Error())
-						os.Exit(-1)
-					}
-
-					fmt.Fprint(os.Stdout, "srm: ", match, " was safety deleted.\n")
-				}
-			}
-
-			os.Exit(0)
-			// srmPathAbs, _ := filepath.Abs(file_name)
-			// idx := strings.Index(srmPathAbs, file_name)
-			// srmSourcePath := srmPathAbs[:idx]
-
-			// source := "{" + strings.Replace(srmSourcePath, "/", "-", -1) + "}"
-
-			// filePath := app.SrmHomeDir + "/" + source + file_name
-
-			// // 1st Copy file to safety folder
-			// srmDoCopy(file_name, filePath)
-
-			// // 2nd Compress file on target
-			// srmCompress(filePath)
-
-			// // 3rd Remove source file
-			// if err := srmfile.SrmRemove(file_name); err != nil {
-			// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-			// 	fmt.Println(err.Error())
-			// 	os.Exit(-1)
-			// }
-
-			// // 4th Remove target uncompressed file
-			// if err := srmfile.SrmRemove(filePath); err != nil {
-			// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-			// 	fmt.Println(err.Error())
-			// 	os.Exit(-1)
-			// }
-
-			// fmt.Fprint(os.Stdout, "srm: ", file_name, " was safety deleted.")
-			// os.Exit(0)
+			srmFunc(cmd, args, app)
 		},
 	}
 
+	cmd.flags.BoolVar(&isForce, "force", false, "force remove without save")
+	cmd.flags.BoolVar(&isForce, "f", false, "remove saving for restore")
+	cmd.flags.BoolVar(&isSafe, "safe", false, "remove saving for restore")
+	cmd.flags.BoolVar(&isSafe, "s", false, "remove saving for restore")
+
 	cmd.flags.Usage = func() {
-		fmt.Fprintln(os.Stderr, srmUsage)
+		fmt.Fprintf(os.Stderr, srmUsage)
 	}
 
 	return cmd
 }
 
-func srmDoCopy(srcFileName string, tgtPath string) {
+func srmFunc(cmd *Command, args []string, app app.Srm) {
+	if len(args) == 0 {
+		fmt.Fprintf(os.Stderr, srmUsage)
+		os.Exit(-1)
+	}
+
+	if !isForce && !isSafe {
+		fmt.Fprintf(os.Stderr, srmUsage)
+		os.Exit(-1)
+	}
+
+	srmContentToRemove := cmd.flags.Args()
+
+	for _, file := range srmContentToRemove {
+		srmMatches, err := filepath.Glob(file)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		}
+
+		for _, srmFile := range srmMatches {
+			// Stat the content to identify if it is file or directory
+			info, err := os.Stat(srmFile)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(-1)
+			}
+			if !info.IsDir() {
+				srmRemoveFile(app.SrmHomeDir, srmFile, isSafe)
+			} else {
+				srmRemoveDirectory(app.SrmHomeDir, srmFile, isSafe)
+			}
+		}
+	}
+
+	os.Exit(0)
+}
+
+func srmRemoveFile(srmHomeDir string, srmParamFileName string, hasSafe bool) {
+	srmAbsPath, _ := filepath.Abs(srmParamFileName)
+	idx := strings.Index(srmAbsPath, srmParamFileName)
+	srmSourcePath := srmAbsPath[:idx]
+	source := "{" + strings.Replace(srmSourcePath, "/", "-", -1) + "}"
+	srmDestinationPath := srmHomeDir + "/" + source + srmParamFileName
+
+	if hasSafe {
+		// 1st Copy file to safety folder
+		srmDoCopyFile(srmParamFileName, srmDestinationPath)
+
+		// 2nd Compress file on target
+		srmCompress(srmDestinationPath)
+	}
+
+	// 3rd Remove source file
+	if err := srmfile.SrmRemove(srmParamFileName); err != nil {
+		fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+		fmt.Println(err.Error())
+		os.Exit(-1)
+	}
+
+	if hasSafe {
+		// 4th Remove target uncompressed file
+		if err := srmfile.SrmRemove(srmDestinationPath); err != nil {
+			fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+			fmt.Println(err.Error())
+			os.Exit(-1)
+		}
+	}
+
+	if hasSafe {
+		fmt.Fprint(os.Stdout, "srm: ", srmParamFileName, " was safety deleted.\n")
+	} else {
+		fmt.Fprint(os.Stdout, "srm: ", srmParamFileName, " was deleted.\n")
+	}
+}
+
+func srmRemoveDirectory(srmHomeDir string, srmParamFileName string, hasSafe bool) {
+	srmSourcePath, _ := filepath.Abs(srmParamFileName)
+	source := "{" + strings.Replace(srmSourcePath, "/", "-", -1) + "}"
+	srmDestinationPath := srmHomeDir + "/" + source
+
+	if hasSafe {
+		// 1st Copy file to safety folder
+		if err := srmDoCopyDirectory(srmSourcePath, srmDestinationPath); err != nil {
+			fmt.Fprint(os.Stderr, "Error: saving folder")
+			os.Exit(-1)
+		}
+
+		// 2nd Compress file on target
+		srmCompress(srmDestinationPath)
+	}
+
+	// 3rd Remove source file
+	if err := srmfile.SrmRemoveDirectory(srmSourcePath); err != nil {
+		fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+		fmt.Println(err.Error())
+		os.Exit(-1)
+	}
+
+	if hasSafe {
+		// 4th Remove target uncompressed file
+		if err := srmfile.SrmRemoveDirectory(srmDestinationPath); err != nil {
+			fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+			fmt.Println(err.Error())
+			os.Exit(-1)
+		}
+	}
+
+	if hasSafe {
+		fmt.Fprint(os.Stdout, "srm: ", srmParamFileName, " was safety deleted.\n")
+	} else {
+		fmt.Fprint(os.Stdout, "srm: ", srmParamFileName, " was deleted.\n")
+	}
+}
+
+func srmDoCopyFile(srcFileName string, tgtPath string) {
 	src, err := os.Open(srcFileName)
 	if err != nil {
 		fmt.Fprint(os.Stderr, "srm: unable to save file. [src]")
@@ -129,6 +184,22 @@ func srmDoCopy(srcFileName string, tgtPath string) {
 		fmt.Fprint(os.Stderr, "srm: unable to save file. [cpy]")
 		os.Exit(-1)
 	}
+}
+
+func srmDoCopyDirectory(srmSourcePath string, srmDestinationPath string) error {
+	return filepath.Walk(srmSourcePath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+
+		newPath := strings.Replace(path, srmSourcePath, srmDestinationPath, 1)
+		if info.IsDir() {
+			return os.MkdirAll(newPath, info.Mode())
+		} else {
+			return os.Rename(path, newPath)
+		}
+	})
 }
 
 func srmCompress(srmFileToCompress string) {
