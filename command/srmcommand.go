@@ -149,7 +149,7 @@ func srmRemoveDirectory(srmHomeDir string, srmParamFileName string, hasSafe bool
 
 	if hasSafe {
 		// 4th Remove target uncompressed file
-		if err := srmfile.SrmRemoveDirectory(srmSourcePath); err != nil {
+		if err := srmfile.SrmRemoveDirectory(srmDestinationPath); err != nil {
 			fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
 			fmt.Println(err.Error())
 			os.Exit(-1)
