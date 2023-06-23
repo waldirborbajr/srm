@@ -19,7 +19,7 @@ $ tar xvzf srm-*.tar.gz
 $ mv srm /usr/local/bin
 ```
 
-### 
+### Overview
 
 ```sh
 srm
@@ -30,11 +30,11 @@ srm - Safe ReMove is a simple tool to remove file/directory safety.
 Option:
 
 Commands:
-        srm - Remove a file/directory using the safe mode that preserves the file that is possible to restore
-        rst - Restore a file/directory that was deleted with a safe option
-        cls - Cleanup removed files after 18 days if not informed another day as parameter
-        hlp - Display this help information
-        ver - Prints version info to the console
+srm - Remove a file/directory using the safe mode that preserves the file that is possible to restore
+rst - Restore a file/directory that was deleted with a safe option
+cls - Cleanup removed files after 18 days if not informed another day as parameter
+hlp - Display this help information
+ver - Prints version info to the console
 ```
 
 ```sh

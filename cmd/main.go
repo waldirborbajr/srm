@@ -11,16 +11,16 @@ import (
 
 var usage = `Usage: srm command [options]
 
-srm - Safe ReMove it is a simple tool to remove file/directory safety.
+srm - Safe ReMove is a simple tool to remove file/directory safety.
 
 Option:
 
 Commands:
-	srm - Remove a file/diretory using safe mode thats preserve file that is possible to restore
-	rst - Restore a file/diretory that was deleted with safe option
-	cls - Cleanup removed files after 18 days if not informed another day as parameter
-	hlp - Display this help information
-	ver - Prints version info to console
+  srm - Remove a file/directory using the safe mode that preserves the file that is possible to restore
+  rst - Restore a file/directory that was deleted with a safe option
+  cls - Cleanup removed files after 18 days if not informed another day as parameter
+  hlp - Display this help information
+  ver - Prints version info to the console
 `
 
 func init() {
@@ -75,8 +75,6 @@ func usageAndExit(msg string) {
 		if err := fmt.Errorf("%s", msg); err != nil {
 			os.Exit(-1)
 		}
-		// fmt.Fprint(os.Stderr, msg)
-		// fmt.Fprintf(os.Stderr, "\n")
 	}
 	flag.Usage()
 	os.Exit(0)
