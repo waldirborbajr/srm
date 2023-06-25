@@ -58,9 +58,10 @@ func NewRestoreCommand(app app.Srm) *Command {
 								os.Exit(-1)
 							}
 
-							os.Exit(-1)
-
-							srmfile.SrmCleanup(filepath.Join(srmPathHome, rawContent))
+							if err := srmfile.SrmCleanup(filepath.Join(srmPathHome, rawContent)); err != nil {
+								fmt.Fprintf(os.Stderr, "Error: %v", err)
+								os.Exit(-1)
+							}
 						}
 					}
 				}
@@ -112,23 +113,7 @@ func srmRestore(srmSrc string, srmTgt string) error {
 		srmSrc = srmSrc[:position]
 	}
 
-	fmt.Println("SRC >> ", srmSrc)
-	fmt.Println("TGT >> ", srmTgt)
-
-	src, err := os.Open(srmSrc)
-	if err != nil {
-		return err
-	}
-	dst, err := os.Create(srmTgt)
-	if err != nil {
-		return err
-	}
-
-	defer dst.Close()
-
-	_, err = io.Copy(dst, src)
-	src.Close()
-	if err != nil {
+	if err := os.Rename(srmSrc, srmTgt); err != nil {
 		return err
 	}
 
