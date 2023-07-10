@@ -2,7 +2,6 @@ package srmfile
 
 import (
 	"os"
-	"strings"
 )
 
 func SrmRemove(srmRmFileName string) error {
@@ -21,12 +20,12 @@ func SrmRemoveDirectory(srmRmFileName string) error {
 
 func SrmCleanup(srmRmFileName string) error {
 	// Remove .zlib file
-	if err := os.Remove(srmRmFileName); err != nil {
-		return err
-	}
+	// if err := os.Remove(srmRmFileName); err != nil {
+	// 	return err
+	// }
 
 	// Remove original file fom .srm folder
-	if err := os.Remove(strings.TrimSuffix(srmRmFileName, ".zlib")); err != nil {
+	if err := os.Remove(srmRmFileName); err != nil {
 		return err
 	}
 
