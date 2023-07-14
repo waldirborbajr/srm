@@ -95,18 +95,22 @@ func srmRemoveFile(srmHomeDir string, srmParamFileName string, hasSafe bool) {
 
 	if hasSafe {
 		// 1st Copy file to safety folder
-		srmDoCopyFile(srmParamFileName, srmDestinationPath)
+		if err := srmDoCopyFile(srmParamFileName, srmDestinationPath); err != nil {
+			fmt.Fprint(os.Stderr, "srm: unable to save file. [cpy]")
+			fmt.Println(err.Error())
+			os.Exit(-1)
+		}
 
 		// 2nd Compress file on target
 		srmCompress(srmDestinationPath)
 	}
 
 	// 3rd Remove source file
-	if err := srmfile.SrmRemove(srmParamFileName); err != nil {
-		fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
-		fmt.Println(err.Error())
-		os.Exit(-1)
-	}
+	// if err := srmfile.SrmRemove(srmParamFileName); err != nil {
+	// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [rmv]")
+	// 	fmt.Println(err.Error())
+	// 	os.Exit(-1)
+	// }
 
 	if hasSafe {
 		// 4th Remove target uncompressed file
@@ -163,27 +167,34 @@ func srmRemoveDirectory(srmHomeDir string, srmParamFileName string, hasSafe bool
 	}
 }
 
-func srmDoCopyFile(srcFileName string, tgtPath string) {
-	src, err := os.Open(srcFileName)
-	if err != nil {
-		fmt.Fprint(os.Stderr, "srm: unable to save file. [src]")
-		os.Exit(-1)
+func srmDoCopyFile(srcFileName string, tgtPath string) error {
+		
+	if err := os.Rename(srcFileName, tgtPath); err != nil {
+		return err
 	}
 
-	dst, err := os.Create(tgtPath)
-	if err != nil {
-		fmt.Fprint(os.Stderr, "srm: unable to save file. [dst]")
-		os.Exit(-1)
-	}
+	return nil
 
-	defer dst.Close()
-
-	_, err = io.Copy(dst, src)
-	src.Close()
-	if err != nil {
-		fmt.Fprint(os.Stderr, "srm: unable to save file. [cpy]")
-		os.Exit(-1)
-	}
+	// src, err := os.Open(srcFileName)
+	// if err != nil {
+	// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [src]")
+	// 	os.Exit(-1)
+	// }
+	//
+	// dst, err := os.Create(tgtPath)
+	// if err != nil {
+	// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [dst]")
+	// 	os.Exit(-1)
+	// }
+	//
+	// defer dst.Close()
+	//
+	// _, err = io.Copy(dst, src)
+	// src.Close()
+	// if err != nil {
+	// 	fmt.Fprint(os.Stderr, "srm: unable to save file. [cpy]")
+	// 	os.Exit(-1)
+	// }
 }
 
 func srmDoCopyDirectory(srmSourcePath string, srmDestinationPath string) error {
