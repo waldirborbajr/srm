@@ -78,7 +78,8 @@ func srmFunc(cmd *Command, args []string, app app.Srm) {
 			if !info.IsDir() {
 				srmRemoveFile(app.SrmHomeDir, srmFile, isSafe)
 			} else {
-				srmRemoveDirectory(app.SrmHomeDir, srmFile, isSafe)
+				// TODO: refeactor remove dir step
+				// srmRemoveDirectory(app.SrmHomeDir, srmFile, isSafe)
 			}
 		}
 	}
