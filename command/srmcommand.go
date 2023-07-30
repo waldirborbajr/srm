@@ -18,7 +18,7 @@ var (
 	isForce  bool
 	srmUsage = `Usage: srm srm [options....]
 
-Usage: 
+Usage:
 	srm srm --save file.bak
 	srm srm --force file.bak
 	srm srm --save file*
@@ -169,7 +169,6 @@ func srmRemoveDirectory(srmHomeDir string, srmParamFileName string, hasSafe bool
 }
 
 func srmDoCopyFile(srcFileName string, tgtPath string) error {
-		
 	if err := os.Rename(srcFileName, tgtPath); err != nil {
 		return err
 	}
