@@ -23,9 +23,6 @@ Commands:
   ver - Prints version info to the console
 `
 
-func init() {
-}
-
 func main() {
 	srmHomeDir, err := srmfile.SrmHome()
 	if err != nil {
@@ -66,7 +63,10 @@ func main() {
 		os.Exit(-1)
 	}
 
-	cmd.Init(os.Args[2:])
+	if err := cmd.Init(os.Args[2:]); err != nil {
+		fmt.Fprintf(os.Stderr, "Error initing")
+		os.Exit(-1)
+	}
 	cmd.Run()
 }
 
