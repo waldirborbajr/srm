@@ -1,14 +1,15 @@
 .PHONY: all clean
 
-binary   = srm 
+binary   = srm
 version  = 0.1.0
 build	   = $(shell git rev-parse HEAD)
 ldflags  = -ldflags "-X 'github.com/waldirborbajr/srm/command.version=$(version)'
 ldflags += -X 'github.com/waldirborbajr/srm/command.build=$(build)'"
 
 all:
-	go build -o $(binary) $(ldflags) ./cmd/main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $(binary) $(ldflags) ./cmd/main.go
 	mv $(binary) $(GOPATH)/bin
+
 test:
 	go test ./... -cover -coverprofile c.out
 	go tool cover -html=c.out -o coverage.html
