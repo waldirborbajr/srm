@@ -54,7 +54,7 @@ func NewCleanupCommand(app app.Srm) *Command {
 }
 
 func isOlderThan(t time.Time, day int) bool {
-	return time.Now().Sub(t) > time.Duration(day)*24*time.Hour
+	return int(time.Since(t).Hours()) > 24*day
 }
 
 func srmCleanup(app app.Srm, day int) error {
