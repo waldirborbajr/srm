@@ -1,4 +1,5 @@
 name: golangci-lint
+
 on:
   push:
     tags:
@@ -8,17 +9,32 @@ on:
   pull_request:
 permissions:
   contents: read
+
 jobs:
-  golangci:
-    name: lint
+  typocheck:
+    uses: ./.github/workflows/typo-check.yaml
+
+  golanglint:
+    # if: ${{ github.event.typocheck.conclusion == 'success' }}
+    needs: [typocheck]
+    name: "Lint"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
     steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.19
-      - uses: actions/checkout@v3
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-          version: latest
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-go@v4
+      with:
+        go-version: 1.19
+
+    - name: "Go Lint Standard"
+      if: runner.os != 'Windows'
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+        args: "--out-${NO_FUTURE}format colored-line-number"
+        skip-pkg-cache: true
+        skip-build-cache: true
