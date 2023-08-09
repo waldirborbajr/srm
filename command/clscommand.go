@@ -32,7 +32,10 @@ func clsFunc(cmd *Command, args []string, app app.Srm) {
 	}
 
 	day, _ := strconv.Atoi(days)
-	srmCleanup(app, day)
+	if err := srmCleanup(app, day); err != nil {
+		fmt.Fprintf(os.Stderr, "Running cleanup")
+		os.Exit(-1)
+	}
 }
 
 func NewCleanupCommand(app app.Srm) *Command {
