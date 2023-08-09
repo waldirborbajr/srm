@@ -24,7 +24,7 @@ func SrmCleanup(srmRmFileName string) error {
 	// 	return err
 	// }
 
-	// Remove original file fom .srm folder
+	// Remove original file of .srm folder
 	if err := os.Remove(srmRmFileName); err != nil {
 		return err
 	}
