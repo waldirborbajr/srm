@@ -3,7 +3,6 @@ package command
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -54,18 +53,24 @@ func NewCleanupCommand(app app.Srm) *Command {
 }
 
 func isOlderThan(t time.Time, day int) bool {
-	return time.Now().Sub(t) > time.Duration(day)*24*time.Hour
+	return int(time.Since(t).Hours()) > 24*day
 }
 
 func srmCleanup(app app.Srm, day int) error {
-	tmpfiles, err := ioutil.ReadDir(app.SrmHomeDir)
+	tmpfiles, err := os.ReadDir(app.SrmHomeDir)
 	if err != nil {
 		return err
 	}
 
 	for _, file := range tmpfiles {
-		if file.Mode().IsRegular() {
-			if isOlderThan(file.ModTime(), day) {
+		if !file.IsDir() {
+			info, err := file.Info()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "ERROR: getting file.Ifo() %s", filepath.Join(app.SrmHomeDir, file.Name()))
+				return err
+			}
+
+			if isOlderThan(info.ModTime(), day) {
 				fmt.Println("Removing : ", filepath.Join(app.SrmHomeDir, file.Name()))
 				if err := srmfile.SrmRemove(filepath.Join(app.SrmHomeDir, file.Name())); err != nil {
 					fmt.Fprintf(os.Stderr, "ERROR: removing %s", filepath.Join(app.SrmHomeDir, file.Name()))
