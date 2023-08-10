@@ -11,9 +11,6 @@ permissions:
   contents: read
 
 jobs:
-  typocheck:
-    uses: ./.github/workflows/typo-check.yaml
-
   golanglint:
     # if: ${{ github.event.typocheck.conclusion == 'success' }}
     needs: [typocheck]
