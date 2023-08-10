@@ -42,7 +42,7 @@ func NewSafeRemoveCommand(app app.Srm) *Command {
 	cmd.flags.BoolVar(&isSafe, "s", false, "remove saving for restore")
 
 	cmd.flags.Usage = func() {
-		fmt.Fprintf(os.Stderr, srmUsage)
+		fmt.Fprintf(os.Stderr, "%s", srmUsage)
 	}
 
 	return cmd
@@ -50,12 +50,12 @@ func NewSafeRemoveCommand(app app.Srm) *Command {
 
 func srmFunc(cmd *Command, args []string, app app.Srm) {
 	if len(args) == 0 {
-		fmt.Fprintf(os.Stderr, srmUsage)
+		fmt.Fprintf(os.Stderr, "%s", srmUsage)
 		os.Exit(-1)
 	}
 
 	if !isForce && !isSafe {
-		fmt.Fprintf(os.Stderr, srmUsage)
+		fmt.Fprintf(os.Stderr, "%s", srmUsage)
 		os.Exit(-1)
 	}
 
