@@ -50,7 +50,7 @@ func NewCleanupCommand(app app.Srm) *Command {
 	cmd.flags.StringVar(&days, "d", "", "")
 
 	cmd.flags.Usage = func() {
-		fmt.Fprintf(os.Stderr, clsUsage)
+		fmt.Fprintf(os.Stderr, "%s", clsUsage)
 	}
 	return cmd
 }
