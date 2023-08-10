@@ -1,6 +1,12 @@
 name: Typo Check
 
-on: [workflow_call]
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
 
 jobs:
   typocheck:
