@@ -18,7 +18,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
-    - cron: '34 18 * * 2'
+    - cron: '25 1 * * 1'
 
 jobs:
   analyze:
@@ -47,6 +47,19 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    - name: Go Formatter
+      # You may pin to the exact commit or the version.
+      # uses: sladyn98/auto-go-format@6557e892479fd174506c48cb34017c51399d492b
+      uses: sladyn98/auto-go-format@v0.0.1
+        
+    - name: Go-linter
+      # You may pin to the exact commit or the version.
+      # uses: Jerome1337/golint-action@2c695d223ee85ccf25d5e5e150a1b2dbc3fc3634
+      uses: Jerome1337/golint-action@v1.0.3
+      with:
+        # Path used by golint command
+        golint-path: # optional, default is ./...
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
