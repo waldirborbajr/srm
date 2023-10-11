@@ -7,7 +7,7 @@
   <br>
 </p>
 
-`tl;dr:` ```srm``` is a command-line Safe ReMove file, that allows recovery if necessarily.
+`tl;dr:` ```srm``` is a command-line Safe ReMove file, that allows recovery if necessary.
 
 Deleted files are sent to (```~/.srm/```) giving you a chance to recover it. 
 
@@ -81,12 +81,12 @@ Copyright 2023 Waldir Borba Junior (<mailto:wborbajr@gmail.com>)
 SPDX-License-Identifier: Apache-2.0
 
 ## TODO
-- [x] On Safe Remove must compress "deleted" content to optimize storaged space
+- [x] On Safe Remove must compress "deleted" content to optimize storage space
 - [x] Safe Remove directory with content and subdirectories
 - [ ] Restore directory with files and subdirectories
-- [ ] Add short command option
+- [x] Add short command option
 - [ ] Implement tests
-- [x] TTL to purge files removed with safe option.
+- [x] TTL to purge files removed with a safe option.
 - [x] Delete passing with wildcard pattern
 - [ ] Open to PR and **new** features
 
