@@ -1,38 +1,30 @@
-name: golangci-lint
+name: lint
 
 on:
   push:
-    tags:
-      - v*
     branches:
       - main
+    paths-ignore:
+      - '**.md'
   pull_request:
+    branches:
       - main
-permissions:
-  contents: read
+    paths-ignore:
+      - '**.md'
+
+permissions: read-all
 
 jobs:
-  golanglint:
-    # if: ${{ github.event.typocheck.conclusion == 'success' }}
-    needs: [typocheck]
-    name: "Lint"
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - uses: actions/setup-go@v4
-      with:
-        go-version: 1.19
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.20"
 
-    - name: "Go Lint Standard"
-      if: runner.os != 'Windows'
-      uses: golangci/golangci-lint-action@v3
-      with:
-        version: latest
-        args: "--out-${NO_FUTURE}format colored-line-number"
-        skip-pkg-cache: true
-        skip-build-cache: true
+      - name: lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.52.0
