@@ -2,9 +2,8 @@
 
 [![Go](https://github.com/waldirborbajr/srm/actions/workflows/go.yml/badge.svg)](https://github.com/waldirborbajr/srm/actions/workflows/go.yml) .::. [![golangci-lint](https://github.com/waldirborbajr/srm/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/waldirborbajr/srm/actions/workflows/golangci-lint.yml) .::. [![Typo Check](https://github.com/waldirborbajr/srm/actions/workflows/typo-check.yaml/badge.svg)](https://github.com/waldirborbajr/srm/actions/workflows/typo-check.yaml)
 
-<p>
-  <img src="./assets/logo.png" width="128"/>
-  <br>
+<p align="center">
+  <img width="256" height="256" src="./assets/srm-logo.png" />
 </p>
 
 `tl;dr:` ```srm``` is a command-line Safe ReMove file, that allows recovery if necessary.
