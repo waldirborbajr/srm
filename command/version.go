@@ -22,9 +22,9 @@ var (
 
 var versionFunc = func(cmd *Command, args []string) {
 	if short {
-		fmt.Printf("srm via  v%s/2023", version)
+		fmt.Printf("srm via :wipe v%s/2026", version)
 	} else {
-		fmt.Printf("srm via  v%s/2023, build: %s", version, build)
+		fmt.Printf("srm via :wipe v%s/2026, build: %s", version, build)
 	}
 	os.Exit(0)
 }
