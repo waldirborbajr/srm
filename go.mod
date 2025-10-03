@@ -1,3 +1,3 @@
 module waldirborbajr/srm
 
-go 1.20
+go 1.25
